@@ -21,13 +21,14 @@ db-cl:
 	rm -rf redis-data
 
 dc-up:
+	cd infrastructure
 	docker compose up -d --build
 
 migrat:
-	docker exec -i auth-service-postgres-1 psql \
+	docker exec -i fullrestapi-postgres-1 psql \
           -U root \
           -d postgres \
-          < ./db/migrations/0001_init.up.sql
+          < ./db/migrations/0001_init.sql
 
 dev: export LOG_LEVEL = debug
 dev: export LOG_FILE  = $(LOG_DIR)/dev.log
