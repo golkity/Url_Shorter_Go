@@ -5,4 +5,5 @@ import "errors"
 var (
 	Error_InitRepository = errors.New("failed to initialize repository")
 	Error_StartServer    = errors.New("failed to start server")
+	Error_URLNotFound    = errors.New("url not found")
 )
