@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"log"
 	"net/http"
 	"os"
@@ -13,15 +15,17 @@ import (
 
 func main() {
 	Port := os.Getenv("APP_PORT")
-	Postgres := os.Getenv("POSTGRES_DSN")
+	dbURL := os.Getenv("POSTGRES_DSN")
 
-	repo, err := repository.NewPostgresRepository(Postgres)
+	dbpool, err := pgxpool.New(context.Background(), dbURL)
 	if err != nil {
-		log.Fatalf("%s : %v", custom_errors.Error_InitRepository, err)
+		log.Fatalf("Unable to connect to database: %v\n", err)
 	}
-	defer repo.Close()
+	defer dbpool.Close()
 
-	urlService := service.NewURLService(repo)
+	urlRepo := repository.NewPostgresRepository(dbpool)
+
+	urlService := service.NewURLService(urlRepo)
 	urlHandler := handler.NewURLHandler(urlService)
 	router := routes.NewRouter(urlHandler)
 
