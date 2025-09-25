@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"url-shortener/internal/custom_errors"
 	"url-shortener/internal/handler/models"
+	"url-shortener/internal/middleware"
 	"url-shortener/internal/service"
 
 	"github.com/go-chi/chi/v5"
@@ -20,13 +21,19 @@ func NewURLHandler(s service.URLService) *URLHandler {
 }
 
 func (h *URLHandler) CreateShortURL(w http.ResponseWriter, r *http.Request) {
+	userID, ok := r.Context().Value(middleware.UserIDKey).(string)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
 	var req models.CreateShortURLRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	shortURL, err := h.service.CreateShortURL(r.Context(), req.URL)
+	shortURL, err := h.service.CreateShortURL(r.Context(), req.URL, userID)
 	if err != nil {
 		http.Error(w, "Failed to create short URL", http.StatusInternalServerError)
 		return
