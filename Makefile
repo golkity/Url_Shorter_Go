@@ -1,5 +1,7 @@
 LOG_DIR    = ../logs
 
+COMPOSE_FILE := infrastructure/docker-compose.yml
+
 swag:
 	go run github.com/swaggo/swag/cmd/swag@latest init -g cmd/auth/main.go -o api/docs
 
@@ -12,20 +14,18 @@ build:
 docker:
 	docker build -t $(IMAGE):latest .
 
-dc-down:
-	docker-compose down --volumes --remove-orphans
-	rm -rf kafka-data
-
 db-cl:
 	rm -rf postgres-data
 	rm -rf redis-data
 
 dc-up:
-	cd infrastructure
-	docker compose up -d --build
+	docker-compose -f $(COMPOSE_FILE) up --build -d
 
-migrat:
-	docker exec -i fullrestapi-postgres-1 psql \
+dc-down:
+	docker-compose -f $(COMPOSE_FILE) down
+
+migration:
+	docker exec -i infrastructure-postgres-1 psql \
           -U root \
           -d postgres \
           < ./db/migrations/0001_init.sql
