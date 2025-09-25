@@ -1,4 +1,4 @@
-FROM golang:1.23.0-alpine AS builder
+FROM golang:1.23-alpine AS builder
 
 RUN apk add --no-cache git
 
@@ -7,7 +7,7 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 
-COPY . .
+COPY ../.. .
 
 RUN go install github.com/swaggo/swag/cmd/swag@v1.16.3
 RUN swag init -g cmd/main.go
