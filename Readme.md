@@ -25,37 +25,36 @@ graph TD
 -----
 
 ```mermaid
-classDiagram
-    class Customer {
-        +OID : GUID
-        +Name : VARCHAR
-        +Address : VARCHAR
+erDiagram
+    CUSTOMER {
+        GUID OID PK
+        VARCHAR Name
+        VARCHAR Address
     }
 
-    class Order {
-        +OrderID : INTEGER
-        +CustomerOID : GUID
-        +OrderDate : DATE
-        +TotalAmount : DECIMAL
+    ORDER {
+        INTEGER OrderID PK
+        GUID CustomerOID FK
+        DATE OrderDate
+        DECIMAL TotalAmount
     }
 
-    class Product {
-        +ProductID : INTEGER
-        +Name : VARCHAR
-        +Price : DECIMAL
+    PRODUCT {
+        INTEGER ProductID PK
+        VARCHAR Name
+        DECIMAL Price
     }
 
-    class OrderItem {
-        +OrderItemID : INTEGER
-        +OrderID : INTEGER
-        +ProductID : INTEGER
-        +Quantity : INTEGER
+    ORDERITEM {
+        INTEGER OrderItemID PK
+        INTEGER OrderID FK
+        INTEGER ProductID FK
+        INTEGER Quantity
     }
 
-    Customer --> Order : places
-    Order --> OrderItem : contains
-    Product --> OrderItem : includes
-
+    CUSTOMER ||--o{ ORDER : places
+    ORDER ||--o{ ORDERITEM : contains
+    PRODUCT ||--o{ ORDERITEM : includes
 ```
 
 ------
